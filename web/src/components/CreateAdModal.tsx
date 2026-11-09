@@ -4,28 +4,18 @@ import * as Checkbox from '@radix-ui/react-checkbox'
 import * as ToggleGroup from '@radix-ui/react-toggle-group'
 
 import { Input } from './Form/Input';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { api } from '../lib/api';
+import { Game } from '../types';
 
-interface Game {
+interface CreateAdModalProps {
+    games: Game[];
+}
 
-    id: string;
-    title: string;
-} 
+export function CreateAdModal({ games }: CreateAdModalProps) {
 
-export function CreateAdModal() {
-
-    const [games, setGames] = useState<Game[]>([])
     const [weekDays, setWeekDays] = useState<string[]>([]) 
     const [useVoiceChannel, setUseVoiceChannel] = useState (false)
-
-    useEffect(() => {
-
-        api.get('/games')
-        .then(response => {
-            setGames(response.data)
-        })
-    }, [])
 
  async   function handleCreateAd(event: FormEvent) {
 

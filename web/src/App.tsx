@@ -7,24 +7,14 @@ import { CreateAdModal } from './components/CreateAdModal'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useState, useEffect } from 'react'
 import { api } from './lib/api'
-
-
-
-interface Game {
-  id: string;
-  bannerUrl: string;
-  title: string;
-  _count: {
-    ads: number;
-  }
-} 
+import { Game } from './types'
 
 function App() {  
 
   const [games, setGames] = useState<Game[]>([]); 
 
   useEffect(() => {
-    api.get('/games').then(response => {
+    api.get<Game[]>('/games').then(response => {
       setGames(response.data)
     })
   }, [])
@@ -49,7 +39,7 @@ function App() {
         </div> 
         <Dialog.Root>
           <CreateAdBanner />
-          <CreateAdModal />
+          <CreateAdModal games={games} />
         </Dialog.Root>
       </div>
     )
