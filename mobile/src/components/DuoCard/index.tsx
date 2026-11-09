@@ -2,21 +2,12 @@ import { TouchableOpacity, View, Text } from 'react-native';
 import { THEME } from '../../theme';
 import { DuoInfo } from '../DuoInfo';
 import {GameController} from 'phosphor-react-native';
+import { Ad } from '../../@types/api';
 
 import { styles } from './styles';
 
-export interface DuoCardProps {
-    id: string;
-    hourEnd: string;
-    hourStart: string;
-    name: string;
-    useVoiceChannel: boolean;
-    weekDays: string[];
-    yearsPlaying: number;
-}
-
 interface Props {
-    data: DuoCardProps;
+    data: Ad;
     onConnect: () => void;
 }
 

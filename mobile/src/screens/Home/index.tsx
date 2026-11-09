@@ -6,23 +6,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import logoImg from '../../assets/logo-nlw-esports.png'
 import { Heading } from '../../components/Heading';
 import { styles } from './styles';
-import { GameCard, GameCardProps } from '../../components/GameCard';
+import { GameCard } from '../../components/GameCard';
+import { Game } from '../../@types/api';
 import { Background } from '../../components/Background';
 import { useNavigation } from '@react-navigation/native';
 import { apiGet } from '../../lib/api';
 
 export function Home() {
 
-    const [games,setGames] = useState<GameCardProps[]>([]);
+    const [games,setGames] = useState<Game[]>([]);
 
     const navigation = useNavigation();
 
-    function handleOpenGame({id, title, bannerUrl}: GameCardProps){
+    function handleOpenGame({id, title, bannerUrl}: Game){
         navigation.navigate('game', {id, title, bannerUrl});
     }
 
     useEffect(() => {
-        apiGet<GameCardProps[]>('/games')
+        apiGet<Game[]>('/games')
             .then(data => setGames(data))
             .catch(error => console.error(error));
     },[])

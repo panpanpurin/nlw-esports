@@ -7,7 +7,8 @@ import {Entypo} from '@expo/vector-icons'
 import { THEME } from '../../theme';
 import logoImg from '../../assets/logo-nlw-esports.png'
 import { Heading } from '../../components/Heading';
-import { DuoCard, DuoCardProps } from '../../components/DuoCard';
+import { DuoCard } from '../../components/DuoCard';
+import { Ad } from '../../@types/api';
 import { DuoMatch } from '../../components/DuoMatch';
 import { useEffect, useState } from 'react';
 import { apiGet } from '../../lib/api';
@@ -17,7 +18,7 @@ export function Game() {
   const navigation = useNavigation();
   const route = useRoute();
   const game = route.params as GameParams;
-  const [duos, setDuos] = useState<DuoCardProps[]>([])
+  const [duos, setDuos] = useState<Ad[]>([])
   const [discordDuoSelected, setDiscordDuoSelected] = useState('');
 
   function handleGoBack(){
@@ -34,7 +35,7 @@ export function Game() {
   }
 
   useEffect(() => {
-    apiGet<DuoCardProps[]>(`/games/${game.id}/ads`)
+    apiGet<Ad[]>(`/games/${game.id}/ads`)
       .then(data => setDuos(data))
       .catch(error => console.error(error));
   }, [game.id])
