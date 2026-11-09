@@ -188,7 +188,3 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
     </form>
   );
 }
-
-function requestData() {
-    throw new Error('Function not implemented.');
-}
