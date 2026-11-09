@@ -1,6 +1,6 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView, TouchableOpacity, View, Image, FlatList, Text } from 'react-native';
-import { GameParams } from '../../@types/navigation';
+import { RootStackParamList } from '../../@types/navigation';
 import { Background } from '../../components/Background';
 import { styles } from './styles';
 import {Entypo} from '@expo/vector-icons'
@@ -16,8 +16,8 @@ import { apiGet } from '../../lib/api';
 export function Game() {
 
   const navigation = useNavigation();
-  const route = useRoute();
-  const game = route.params as GameParams;
+  const route = useRoute<RouteProp<RootStackParamList, 'game'>>();
+  const game = route.params;
   const [duos, setDuos] = useState<Ad[]>([])
   const [discordDuoSelected, setDiscordDuoSelected] = useState('');
 
