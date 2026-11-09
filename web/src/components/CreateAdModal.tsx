@@ -104,8 +104,9 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
       </div>
       <div className='flex gap-6'>
         <div className='flex flex-col gap-2'>
-          <label htmlFor='weekDays'>When are you used to play?</label>
+          <label id='weekDays-label'>When are you used to play?</label>
           <ToggleGroup.Root 
+          aria-labelledby='weekDays-label'
           type="multiple" 
           className="grid grid-cols-4 gap-2"
           value={weekDays}
@@ -124,7 +125,7 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
           </ToggleGroup.Root>
         </div>
         <div className='flex flex-col gap-2 flex-1'>
-          <label htmlFor='hoursStart'>Which time of day?</label>
+          <label htmlFor='hourStart'>Which time of day?</label>
           <div className='grid grid-cols-2 gap-2'>
             <Input name="hourStart" id='hourStart' type='time' placeholder='From'/>
             <Input name="hourEnd" id='hourEnd' type='time' placeholder='To'/>
