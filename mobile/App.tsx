@@ -27,7 +27,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    getNotificationListener.current = Notifications.addNotificationResponseReceivedListener(notification => {
+    getNotificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       console.log(notification);
     });
 
@@ -36,8 +36,11 @@ export default function App() {
     });
 
     return () => {
-      if (getNotificationListener.current && responseNotificationListener.current) {
+      if (getNotificationListener.current) {
         Notifications.removeNotificationSubscription(getNotificationListener.current);
+      }
+
+      if (responseNotificationListener.current) {
         Notifications.removeNotificationSubscription(responseNotificationListener.current);
       }
     }
