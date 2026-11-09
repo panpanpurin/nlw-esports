@@ -23,7 +23,7 @@ export default function App() {
   const responseNotificationListener = useRef<Subscription>();
 
   useEffect(() => {
-    getPushNotificationToken();
+    getPushNotificationToken().catch(error => console.error(error));
   }, []);
 
   useEffect(() => {

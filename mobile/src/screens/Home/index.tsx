@@ -23,7 +23,8 @@ export function Home() {
 
     useEffect(() => {
         apiGet<GameCardProps[]>('/games')
-        .then(data => setGames(data));
+            .then(data => setGames(data))
+            .catch(error => console.error(error));
     },[])
 
 

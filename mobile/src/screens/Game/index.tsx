@@ -25,14 +25,19 @@ export function Game() {
   }
 
   async function getDiscordUser(adsId: string) {
-    apiGet<{ discord: string }>(`/ads/${adsId}/discord`)
-    .then(data => setDiscordDuoSelected(data.discord));
+    try {
+      const data = await apiGet<{ discord: string }>(`/ads/${adsId}/discord`);
+      setDiscordDuoSelected(data.discord);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   useEffect(() => {
     apiGet<DuoCardProps[]>(`/games/${game.id}/ads`)
-    .then(data => setDuos(data));
-},[])
+      .then(data => setDuos(data))
+      .catch(error => console.error(error));
+  }, [game.id])
 
   return (
 
