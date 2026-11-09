@@ -11,12 +11,22 @@ import { Game } from './types'
 
 function App() {  
 
-  const [games, setGames] = useState<Game[]>([]); 
+  const [games, setGames] = useState<Game[]>([]);
+  const [isCreateAdModalOpen, setIsCreateAdModalOpen] = useState(false);
 
-  useEffect(() => {
+  function loadGames() {
     api.get<Game[]>('/games').then(response => {
       setGames(response.data)
     })
+  }
+
+  function handleAdCreated() {
+    setIsCreateAdModalOpen(false)
+    loadGames()
+  }
+
+  useEffect(() => {
+    loadGames()
   }, [])
 
     return (
@@ -37,9 +47,9 @@ function App() {
           })}
         
         </div> 
-        <Dialog.Root>
+        <Dialog.Root open={isCreateAdModalOpen} onOpenChange={setIsCreateAdModalOpen}>
           <CreateAdBanner />
-          <CreateAdModal games={games} />
+          <CreateAdModal games={games} onAdCreated={handleAdCreated} />
         </Dialog.Root>
       </div>
     )
