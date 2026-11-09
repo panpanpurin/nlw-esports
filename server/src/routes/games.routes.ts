@@ -19,7 +19,7 @@ gamesRoutes.get("/", asyncHandler(async (request, response) => {
         },
     });
 
-    return response.json([games]);
+    return response.json(games);
 }));
 
 gamesRoutes.post("/:id/ads", asyncHandler(async (request, response) => {

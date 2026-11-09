@@ -25,7 +25,7 @@ function App() {
 
   useEffect(() => {
     axios('http://localhost:3333/games').then(response => {
-      setGames(response.data[0])
+      setGames(response.data)
     })
   }, [])
 
