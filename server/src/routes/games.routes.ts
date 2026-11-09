@@ -1,11 +1,13 @@
 import { Router } from "express";
 import { prisma } from "../lib/prisma";
+import { HttpError } from "../errors/http-error";
+import { asyncHandler } from "../middlewares/async-handler";
 import { convertHourStringToMinutes } from "../utils/convert-hour-string-to-minutes";
 import { convertMinutesToHourString } from "../utils/convert-minutes-to-hour-string";
 
 export const gamesRoutes = Router();
 
-gamesRoutes.get("/", async (request, response) => {
+gamesRoutes.get("/", asyncHandler(async (request, response) => {
     const games = await prisma.game.findMany({
         include: {
             _count: {
@@ -17,11 +19,17 @@ gamesRoutes.get("/", async (request, response) => {
     });
 
     return response.json([games]);
-});
+}));
 
-gamesRoutes.post("/:id/ads", async (request, response) => {
+gamesRoutes.post("/:id/ads", asyncHandler(async (request, response) => {
     const gameId = request.params.id;
     const body: any = request.body;
+
+    const game = await prisma.game.findUnique({ where: { id: gameId }, select: { id: true } });
+
+    if (!game) {
+        throw new HttpError(404, "Game not found");
+    }
 
     const ad = await prisma.ad.create({
         data: {
@@ -37,9 +45,9 @@ gamesRoutes.post("/:id/ads", async (request, response) => {
     });
     console.log('data')
     return response.status(201).json(ad);
-});
+}));
 
-gamesRoutes.get("/:id/ads", async (request, response) => {
+gamesRoutes.get("/:id/ads", asyncHandler(async (request, response) => {
     const gameId = request.params.id;
 
     const ads = await prisma.ad.findMany({
@@ -70,4 +78,4 @@ gamesRoutes.get("/:id/ads", async (request, response) => {
             };
         })
     );
-});
+}));
