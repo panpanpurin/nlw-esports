@@ -10,6 +10,7 @@ import { Heading } from '../../components/Heading';
 import { DuoCard, DuoCardProps } from '../../components/DuoCard';
 import { DuoMatch } from '../../components/DuoMatch';
 import { useEffect, useState } from 'react';
+import { apiGet } from '../../lib/api';
 
 export function Game() {
 
@@ -24,14 +25,12 @@ export function Game() {
   }
 
   async function getDiscordUser(adsId: string) {
-    fetch(`http://192.168.0.32:3333/ads/${adsId}/discord`)
-    .then(response => response.json())
+    apiGet<{ discord: string }>(`/ads/${adsId}/discord`)
     .then(data => setDiscordDuoSelected(data.discord));
   }
 
   useEffect(() => {
-    fetch(`http://192.168.0.32:3333/games/${game.id}/ads`)
-    .then(response => response.json())
+    apiGet<DuoCardProps[]>(`/games/${game.id}/ads`)
     .then(data => setDuos(data));
 },[])
 

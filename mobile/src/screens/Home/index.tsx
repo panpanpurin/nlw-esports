@@ -9,6 +9,7 @@ import { styles } from './styles';
 import { GameCard, GameCardProps } from '../../components/GameCard';
 import { Background } from '../../components/Background';
 import { useNavigation } from '@react-navigation/native';
+import { apiGet } from '../../lib/api';
 
 export function Home() {
 
@@ -21,8 +22,7 @@ export function Home() {
     }
 
     useEffect(() => {
-        fetch('http://192.168.0.32:3333/games')
-        .then(response => response.json())
+        apiGet<GameCardProps[]>('/games')
         .then(data => setGames(data));
     },[])
 
