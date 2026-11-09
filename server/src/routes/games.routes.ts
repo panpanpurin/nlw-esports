@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma";
 import { HttpError } from "../errors/http-error";
 import { asyncHandler } from "../middlewares/async-handler";
+import { createAdSchema } from "../schemas/create-ad.schema";
 import { convertHourStringToMinutes } from "../utils/convert-hour-string-to-minutes";
 import { convertMinutesToHourString } from "../utils/convert-minutes-to-hour-string";
 
@@ -23,7 +24,7 @@ gamesRoutes.get("/", asyncHandler(async (request, response) => {
 
 gamesRoutes.post("/:id/ads", asyncHandler(async (request, response) => {
     const gameId = request.params.id;
-    const body: any = request.body;
+    const body = createAdSchema.parse(request.body);
 
     const game = await prisma.game.findUnique({ where: { id: gameId }, select: { id: true } });
 
@@ -43,7 +44,7 @@ gamesRoutes.post("/:id/ads", asyncHandler(async (request, response) => {
             useVoiceChannel: body.useVoiceChannel,
         },
     });
-    console.log('data')
+
     return response.status(201).json(ad);
 }));
 
