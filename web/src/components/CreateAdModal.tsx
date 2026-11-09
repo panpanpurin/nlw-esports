@@ -8,6 +8,16 @@ import { FormEvent, useState } from 'react';
 import { api } from '../lib/api';
 import { Game } from '../types';
 
+const WEEK_DAYS = [
+  { value: '0', title: 'Sunday', label: 'S' },
+  { value: '1', title: 'Monday', label: 'M' },
+  { value: '2', title: 'Tuesday', label: 'T' },
+  { value: '3', title: 'Wednesday', label: 'W' },
+  { value: '4', title: 'Thursday', label: 'T' },
+  { value: '5', title: 'Friday', label: 'F' },
+  { value: '6', title: 'Saturday', label: 'S' },
+];
+
 interface CreateAdModalProps {
   games: Game[];
   onAdCreated: () => void;
@@ -101,55 +111,16 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
           value={weekDays}
           onValueChange={setWeekDays}
           >
-            <ToggleGroup.Item 
-              value="0"
-              title='Sunday'
-              className={`w-8 h-8 rounded ${weekDays.includes('0') ? 'bg-violet-500' : 'bg-zinc-900'}`}
+            {WEEK_DAYS.map(day => (
+              <ToggleGroup.Item
+                key={day.value}
+                value={day.value}
+                title={day.title}
+                className={`w-8 h-8 rounded ${weekDays.includes(day.value) ? 'bg-violet-500' : 'bg-zinc-900'}`}
               >
-                S
-                </ToggleGroup.Item >
-            <ToggleGroup.Item 
-              value="1"
-              title='Monday'
-              className={`w-8 h-8 rounded ${weekDays.includes('1') ? 'bg-violet-500' : 'bg-zinc-900'}`}
-              >
-                M
-              </ToggleGroup.Item >
-            <ToggleGroup.Item
-              value="2"  
-              title='Tuesday'
-              className={`w-8 h-8 rounded ${weekDays.includes('2') ? 'bg-violet-500' : 'bg-zinc-900'}`}
-              >
-                T
-              </ToggleGroup.Item >
-            <ToggleGroup.Item  
-              value="3"
-              title='Wednesday'
-              className={`w-8 h-8 rounded ${weekDays.includes('3') ? 'bg-violet-500' : 'bg-zinc-900'}`}
-              >
-                W
-              </ToggleGroup.Item >
-            <ToggleGroup.Item  
-              value="4"
-              title='Thursday'
-              className={`w-8 h-8 rounded ${weekDays.includes('4') ? 'bg-violet-500' : 'bg-zinc-900'}`}
-              >
-                T
-              </ToggleGroup.Item >
-            <ToggleGroup.Item 
-              value="5" 
-              title='Friday'
-              className={`w-8 h-8 rounded ${weekDays.includes('5') ? 'bg-violet-500' : 'bg-zinc-900'}`}
-              >
-                F
-              </ToggleGroup.Item >
-            <ToggleGroup.Item 
-              value="6" 
-              title='Saturday'
-              className={`w-8 h-8 rounded ${weekDays.includes('6') ? 'bg-violet-500' : 'bg-zinc-900'}`}
-              >
-                S
-              </ToggleGroup.Item >
+                {day.label}
+              </ToggleGroup.Item>
+            ))}
           </ToggleGroup.Root>
         </div>
         <div className='flex flex-col gap-2 flex-1'>
@@ -161,13 +132,7 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
         </div>
       </div>
       <label className='mt-2 flex items-center gap-2 text-sm'>
-        <Checkbox.Root checked={useVoiceChannel} onCheckedChange={(checked) => {
-          if (checked == true) {
-            setUseVoiceChannel(true)
-          } else {
-            setUseVoiceChannel(false)
-          }
-        }} className="w-6 h-6 p-1 rounded bg-zinc-900">
+        <Checkbox.Root checked={useVoiceChannel} onCheckedChange={checked => setUseVoiceChannel(checked === true)} className="w-6 h-6 p-1 rounded bg-zinc-900">
           <Checkbox.Indicator>
               <Check className="w-4 h-4 text-emerald-400" />
           </Checkbox.Indicator>
