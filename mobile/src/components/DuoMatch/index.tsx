@@ -16,14 +16,19 @@ interface Props extends ModalProps {
 
 export function DuoMatch({discord, onClose, ...rest }: Props) {
 
-  const [isCopping, setIsCopping] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
 
   async function handleCopyDiscordToClipboard() {
-    
-    setIsCopping(true);
-    await Clipboard.setStringAsync(discord);
-    Alert.alert('Discord copied!', 'User copied to your clipboard now you two can play together!');
-    setIsCopping(false);
+    setIsCopying(true);
+
+    try {
+      await Clipboard.setStringAsync(discord);
+      Alert.alert('Discord copied!', 'User copied to your clipboard now you two can play together!');
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsCopying(false);
+    }
   }
 
   return (
@@ -56,9 +61,9 @@ export function DuoMatch({discord, onClose, ...rest }: Props) {
             <Text style={styles.label}>
                 Add on Discord
             </Text>
-            <TouchableOpacity style={styles.discordButton} onPress={handleCopyDiscordToClipboard} disabled={isCopping}>
+            <TouchableOpacity style={styles.discordButton} onPress={handleCopyDiscordToClipboard} disabled={isCopying}>
                 <Text style={styles.discord}>
-                  {isCopping ? <ActivityIndicator color={THEME.COLORS.PRIMARY} /> : discord}
+                  {isCopying ? <ActivityIndicator color={THEME.COLORS.PRIMARY} /> : discord}
              </Text>
             </TouchableOpacity>
             
