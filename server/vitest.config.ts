@@ -2,6 +2,11 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    include: ['src/**/*.test.ts'],
+    env: {
+      DATABASE_URL: 'file:./test.sqlite',
+      NODE_ENV: 'test',
+    },
+    globalSetup: './test/global-setup.ts',
+    fileParallelism: false,
   },
 });
