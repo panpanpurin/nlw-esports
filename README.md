@@ -121,5 +121,5 @@ npx prisma studio
 ```
 
 <h5 align="center">
-  &copy;2023 - <a href="https://github.com/devssaurinho/">Devssaurinho</a>
+  &copy;2023 - <a href="https://github.com/devssaurinho/">Pan</a>
 </h5>
