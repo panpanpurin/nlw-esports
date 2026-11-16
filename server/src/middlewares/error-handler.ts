@@ -2,7 +2,7 @@ import { ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
 import { HttpError } from '../errors/http-error';
 
-export const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
+export const errorHandler: ErrorRequestHandler = (error, _request, response, _next) => {
   if (error instanceof HttpError) {
     return response.status(error.statusCode).json({ message: error.message });
   }
