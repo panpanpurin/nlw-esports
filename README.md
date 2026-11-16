@@ -120,6 +120,23 @@ npx prisma studio
 
 ```
 
+## ✅ Quality checks
+
+Lint and format check, from the repository root (after `npm install` there):
+
+```bash
+npm run lint
+npm run format:check
+```
+
+Server tests, from `server` (they run against a temporary SQLite database that is created and removed automatically):
+
+```bash
+npm test
+```
+
+The same checks run on GitHub Actions for every push to `main` and every pull request.
+
 <h5 align="center">
   &copy;2023 - <a href="https://github.com/devssaurinho/">Pan</a>
 </h5>
