@@ -77,7 +77,7 @@ With GIT installed, in your terminal run the following command:
 git clone https://github.com/Devssaurinho/nlw-esports.git
 ```
 
-To install the dependencies and run the project you will need to have [**Node.js**](https://nodejs.org/en/) installed on your machine, which comes with NPM. 
+To install the dependencies and run the project you will need to have [**Node.js**](https://nodejs.org/en/) installed on your machine, which comes with NPM.
 
 Navigate to separate subfolders for each project (web/mobile/server) and run the following command:
 

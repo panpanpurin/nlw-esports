@@ -1,82 +1,91 @@
-import { Router } from "express";
-import { prisma } from "../lib/prisma";
-import { HttpError } from "../errors/http-error";
-import { asyncHandler } from "../middlewares/async-handler";
-import { createAdSchema } from "../schemas/create-ad.schema";
-import { convertHourStringToMinutes } from "../utils/convert-hour-string-to-minutes";
-import { convertMinutesToHourString } from "../utils/convert-minutes-to-hour-string";
+import { Router } from 'express';
+import { prisma } from '../lib/prisma';
+import { HttpError } from '../errors/http-error';
+import { asyncHandler } from '../middlewares/async-handler';
+import { createAdSchema } from '../schemas/create-ad.schema';
+import { convertHourStringToMinutes } from '../utils/convert-hour-string-to-minutes';
+import { convertMinutesToHourString } from '../utils/convert-minutes-to-hour-string';
 
 export const gamesRoutes = Router();
 
-gamesRoutes.get("/", asyncHandler(async (request, response) => {
+gamesRoutes.get(
+  '/',
+  asyncHandler(async (request, response) => {
     const games = await prisma.game.findMany({
-        include: {
-            _count: {
-                select: {
-                    ads: true,
-                },
-            },
+      include: {
+        _count: {
+          select: {
+            ads: true,
+          },
         },
+      },
     });
 
     return response.json(games);
-}));
+  }),
+);
 
-gamesRoutes.post("/:id/ads", asyncHandler(async (request, response) => {
+gamesRoutes.post(
+  '/:id/ads',
+  asyncHandler(async (request, response) => {
     const gameId = request.params.id;
     const body = createAdSchema.parse(request.body);
 
     const game = await prisma.game.findUnique({ where: { id: gameId }, select: { id: true } });
 
     if (!game) {
-        throw new HttpError(404, "Game not found");
+      throw new HttpError(404, 'Game not found');
     }
 
     const ad = await prisma.ad.create({
-        data: {
-            gameId,
-            name: body.name,
-            yearsPlaying: body.yearsPlaying,
-            discord: body.discord,
-            weekDays: body.weekDays.join(","),
-            hourStart: convertHourStringToMinutes(body.hourStart),
-            hourEnd: convertHourStringToMinutes(body.hourEnd),
-            useVoiceChannel: body.useVoiceChannel,
-        },
+      data: {
+        gameId,
+        name: body.name,
+        yearsPlaying: body.yearsPlaying,
+        discord: body.discord,
+        weekDays: body.weekDays.join(','),
+        hourStart: convertHourStringToMinutes(body.hourStart),
+        hourEnd: convertHourStringToMinutes(body.hourEnd),
+        useVoiceChannel: body.useVoiceChannel,
+      },
     });
 
     return response.status(201).json(ad);
-}));
+  }),
+);
 
-gamesRoutes.get("/:id/ads", asyncHandler(async (request, response) => {
+gamesRoutes.get(
+  '/:id/ads',
+  asyncHandler(async (request, response) => {
     const gameId = request.params.id;
 
     const ads = await prisma.ad.findMany({
-        select: {
-            id: true,
-            name: true,
-            weekDays: true,
-            useVoiceChannel: true,
-            yearsPlaying: true,
-            hourStart: true,
-            hourEnd: true,
-        },
-        where: {
-            gameId,
-        },
-        orderBy: {
-            createdAt: "desc",
-        },
+      select: {
+        id: true,
+        name: true,
+        weekDays: true,
+        useVoiceChannel: true,
+        yearsPlaying: true,
+        hourStart: true,
+        hourEnd: true,
+      },
+      where: {
+        gameId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
     return response.json(
-        ads.map((ad) => {
-            return {
-                ...ad,
-                weekDays: ad.weekDays.split(","),
-                hourStart: convertMinutesToHourString(ad.hourStart),
-                hourEnd: convertMinutesToHourString(ad.hourEnd),
-            };
-        })
+      ads.map((ad) => {
+        return {
+          ...ad,
+          weekDays: ad.weekDays.split(','),
+          hourStart: convertMinutesToHourString(ad.hourStart),
+          hourEnd: convertMinutesToHourString(ad.hourEnd),
+        };
+      }),
     );
-}));
+  }),
+);

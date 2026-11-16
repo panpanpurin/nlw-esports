@@ -1,9 +1,9 @@
-import { NextFunction, Request, RequestHandler, Response } from "express";
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 
 export function asyncHandler(
-    handler: (request: Request, response: Response, next: NextFunction) => Promise<unknown>
+  handler: (request: Request, response: Response, next: NextFunction) => Promise<unknown>,
 ): RequestHandler {
-    return (request, response, next) => {
-        handler(request, response, next).catch(next);
-    };
+  return (request, response, next) => {
+    handler(request, response, next).catch(next);
+  };
 }
