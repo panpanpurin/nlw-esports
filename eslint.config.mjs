@@ -36,13 +36,20 @@ export default tseslint.config(
     files: ['web/**/*.{ts,tsx}', 'mobile/**/*.{ts,tsx}'],
     plugins: { react, 'react-hooks': reactHooks },
     languageOptions: { globals: globals.browser },
-    settings: { react: { version: 'detect' } },
     rules: {
       ...react.configs.recommended.rules,
       ...react.configs['jsx-runtime'].rules,
       ...reactHooks.configs.recommended.rules,
       'react/prop-types': 'off',
     },
+  },
+  {
+    files: ['web/**/*.{ts,tsx}'],
+    settings: { react: { version: '18.2' } },
+  },
+  {
+    files: ['mobile/**/*.{ts,tsx}'],
+    settings: { react: { version: '19.3' } },
   },
   prettier,
 );
