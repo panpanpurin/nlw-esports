@@ -35,8 +35,30 @@ describe('createAdSchema', () => {
     ['hour out of range', { hourEnd: '24:00' }],
     ['minute out of range', { hourEnd: '10:60' }],
     ['useVoiceChannel as string', { useVoiceChannel: 'true' }],
+    ['name longer than 50', { name: 'a'.repeat(51) }],
+    ['discord longer than 37', { discord: 'a'.repeat(38) }],
+    ['yearsPlaying above 60', { yearsPlaying: 61 }],
+    ['equal start and end hours', { hourStart: '20:00', hourEnd: '20:00' }],
   ])('rejects %s', (_label, override) => {
     expect(createAdSchema.safeParse({ ...validAd, ...override }).success).toBe(false);
+  });
+
+  it('accepts values at the upper limits', () => {
+    const ad = { ...validAd, name: 'a'.repeat(50), discord: 'a'.repeat(37), yearsPlaying: 60 };
+    expect(createAdSchema.safeParse(ad).success).toBe(true);
+  });
+
+  it('accepts an overnight range', () => {
+    const ad = { ...validAd, hourStart: '22:00', hourEnd: '02:00' };
+    expect(createAdSchema.safeParse(ad).success).toBe(true);
+  });
+
+  it('reports equal hours on hourEnd', () => {
+    const result = createAdSchema.safeParse({ ...validAd, hourStart: '20:00', hourEnd: '20:00' });
+    expect(result.success).toBe(false);
+    expect(result.error?.flatten().fieldErrors.hourEnd).toEqual([
+      'End hour must differ from start hour',
+    ]);
   });
 
   it.each([
