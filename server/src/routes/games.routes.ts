@@ -59,6 +59,12 @@ gamesRoutes.get(
   asyncHandler(async (request, response) => {
     const gameId = request.params.id;
 
+    const game = await prisma.game.findUnique({ where: { id: gameId }, select: { id: true } });
+
+    if (!game) {
+      throw new HttpError(404, 'Game not found');
+    }
+
     const ads = await prisma.ad.findMany({
       select: {
         id: true,

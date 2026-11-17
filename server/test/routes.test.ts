@@ -145,6 +145,12 @@ describe('GET /games/:id/ads', () => {
 
     expect(response.body).toEqual([]);
   });
+
+  it('returns 404 when the game does not exist', async () => {
+    const response = await request(app).get(`/games/${MISSING_ID}/ads`).expect(404);
+
+    expect(response.body).toEqual({ message: 'Game not found' });
+  });
 });
 
 describe('GET /ads/:id/discord', () => {
