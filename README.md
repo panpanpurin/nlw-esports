@@ -29,7 +29,6 @@ The project is an app that allows users to post an ad to find other players in t
 - [x] Creation of a new ad (web)
 - [x] User feedback: loading during creation, success and error (web)
 - [x] Ad listing (mobile)
-- [x] Receiving push notifications (mobile)
 - [x] Copy discord user to clipboard (mobile)
 
 ## 🚀 Technologies and tools used

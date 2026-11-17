@@ -18,8 +18,6 @@
     "expo-constants": "~13.2.4",
     "expo-font": "~10.2.0",
     "expo-linear-gradient": "~11.4.0",
-    "expo-modules-core": "~0.11.10",
-    "expo-notifications": "~0.16.1",
     "expo-status-bar": "~1.4.0",
     "phosphor-react-native": "^1.1.2",
     "react": "18.0.0",
