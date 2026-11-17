@@ -105,6 +105,8 @@ npm start
 
 ```
 
+In development the app calls the API on port 3333 of the machine running Expo. To use another address, set `API_URL` before starting (for example `API_URL=http://192.168.0.10:3333 npm start`).
+
 Open the project on mobile:
 
 ```bash
