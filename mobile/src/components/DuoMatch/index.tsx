@@ -59,9 +59,11 @@ export function DuoMatch({ discord, onClose, ...rest }: Props) {
             onPress={handleCopyDiscordToClipboard}
             disabled={isCopying}
           >
-            <Text style={styles.discord}>
-              {isCopying ? <ActivityIndicator color={THEME.COLORS.PRIMARY} /> : discord}
-            </Text>
+            {isCopying ? (
+              <ActivityIndicator color={THEME.COLORS.PRIMARY} />
+            ) : (
+              <Text style={styles.discord}>{discord}</Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
