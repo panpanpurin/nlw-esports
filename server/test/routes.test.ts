@@ -183,4 +183,16 @@ describe('GET /ads/:id/discord', () => {
     expect(response.body).toEqual({ message: 'Too many requests, try again later' });
     expect(response.headers).toHaveProperty('ratelimit-policy');
   });
+
+  it('counts each client behind the proxy separately', async () => {
+    const created = await request(app).post(`/games/${GAME_ID}/ads`).send(validAd).expect(201);
+    const url = `/ads/${created.body.id}/discord`;
+
+    for (let i = 0; i < DISCORD_RATE_LIMIT; i++) {
+      await request(app).get(url).set('X-Forwarded-For', '203.0.113.1').expect(200);
+    }
+
+    await request(app).get(url).set('X-Forwarded-For', '203.0.113.1').expect(429);
+    await request(app).get(url).set('X-Forwarded-For', '203.0.113.2').expect(200);
+  });
 });

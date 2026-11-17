@@ -98,6 +98,8 @@ npm run dev
 
 ```
 
+The server reads its settings from `server/.env` (see `server/.env.example`). When it runs behind a reverse proxy, set `TRUST_PROXY` (for example `1` for one proxy hop) so the Discord lookup rate limit counts each client separately.
+
 Run the mobile project:
 
 ```bash
