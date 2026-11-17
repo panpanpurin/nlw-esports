@@ -16,3 +16,13 @@ export interface Ad {
   hourEnd: string;
   useVoiceChannel: boolean;
 }
+
+export interface CreateAdRequest {
+  name: string;
+  yearsPlaying: number;
+  discord: string;
+  weekDays: number[];
+  hourStart: string;
+  hourEnd: string;
+  useVoiceChannel: boolean;
+}

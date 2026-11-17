@@ -5,8 +5,9 @@ import * as ToggleGroup from '@radix-ui/react-toggle-group';
 
 import { Input } from './Form/Input';
 import { FormEvent, useState } from 'react';
+import { isAxiosError } from 'axios';
 import { api } from '../lib/api';
-import type { Game } from '../../../shared/api-types';
+import type { CreateAdRequest, Game } from '../../../shared/api-types';
 
 const WEEK_DAYS = [
   { value: '0', title: 'Sunday', label: 'S' },
@@ -41,35 +42,46 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
   const [weekDays, setWeekDays] = useState<string[]>([]);
   const [useVoiceChannel, setUseVoiceChannel] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  async function handleCreateAd(event: FormEvent) {
+  async function handleCreateAd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (isSubmitting) {
       return;
     }
 
-    const formData = new FormData(event.target as HTMLFormElement);
-    const data = Object.fromEntries(formData);
+    const formData = new FormData(event.currentTarget);
+    const field = (name: string) => String(formData.get(name) ?? '');
 
+    const ad: CreateAdRequest = {
+      name: field('name').trim(),
+      yearsPlaying: Number(field('yearsPlaying')),
+      discord: field('discord').trim(),
+      weekDays: weekDays.map(Number),
+      hourStart: field('hourStart'),
+      hourEnd: field('hourEnd'),
+      useVoiceChannel,
+    };
+
+    if (ad.weekDays.length === 0) {
+      setErrorMessage('Select at least one day of the week.');
+      return;
+    }
+
+    if (ad.hourStart === ad.hourEnd) {
+      setErrorMessage('The end time must differ from the start time.');
+      return;
+    }
+
+    setErrorMessage(null);
     setIsSubmitting(true);
 
     try {
-      await api.post(`/games/${data.game}/ads`, {
-        name: data.name,
-        yearsPlaying: Number(data.yearsPlaying),
-        discord: data.discord,
-        weekDays: weekDays.map(Number),
-        hourStart: data.hourStart,
-        hourEnd: data.hourEnd,
-        useVoiceChannel,
-      });
-
-      alert('The ad has been published!');
+      await api.post(`/games/${field('game')}/ads`, ad);
       onAdCreated();
-    } catch (err) {
-      console.log(err);
-      alert('error');
+    } catch (error) {
+      setErrorMessage(getErrorMessage(error));
     } finally {
       setIsSubmitting(false);
     }
@@ -85,6 +97,7 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
           name="game"
           id="game"
           defaultValue=""
+          required
           className="bg-zinc-900 py-3 px-4 rounded text-sm placeholder:text-zinc-500"
         >
           <option disabled value="">
@@ -102,7 +115,13 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
 
       <div className="flex flex-col gap-2">
         <label htmlFor="name">Your name (or nickname)</label>
-        <Input name="name" id="name" placeholder="How you wish to be called?" />
+        <Input
+          name="name"
+          id="name"
+          placeholder="How you wish to be called?"
+          required
+          maxLength={50}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-6">
@@ -113,11 +132,22 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
             id="yearsPlaying"
             type="number"
             placeholder="# of years played"
+            required
+            min={0}
+            max={60}
+            step={1}
           />
         </div>
         <div className="flex flex-col gap-2">
           <label htmlFor="discord">What is your Discord?</label>
-          <Input name="discord" id="discord" type="text" placeholder="User#0000" />
+          <Input
+            name="discord"
+            id="discord"
+            type="text"
+            placeholder="User#0000"
+            required
+            maxLength={37}
+          />
         </div>
       </div>
       <div className="flex gap-6">
@@ -145,8 +175,22 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
         <div className="flex flex-col gap-2 flex-1">
           <label htmlFor="hourStart">Which time of day?</label>
           <div className="grid grid-cols-2 gap-2">
-            <Input name="hourStart" id="hourStart" type="time" placeholder="From" />
-            <Input name="hourEnd" id="hourEnd" type="time" placeholder="To" />
+            <Input
+              name="hourStart"
+              id="hourStart"
+              type="time"
+              placeholder="From"
+              aria-label="From"
+              required
+            />
+            <Input
+              name="hourEnd"
+              id="hourEnd"
+              type="time"
+              placeholder="To"
+              aria-label="To"
+              required
+            />
           </div>
         </div>
       </div>
@@ -162,6 +206,11 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
         </Checkbox.Root>
         I use voice chat
       </label>
+      {errorMessage && (
+        <p role="alert" className="text-sm text-red-400">
+          {errorMessage}
+        </p>
+      )}
       <footer className="mt-4 flex justify-end gap-4">
         <Dialog.Close className="bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600">
           Cancel
@@ -169,12 +218,32 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="bg-violet-500 px-5 h-12 rounded-md font-semibold flex items-center gap-3 hover:bg-violet-600"
+          className="bg-violet-500 px-5 h-12 rounded-md font-semibold flex items-center gap-3 hover:bg-violet-600 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           <GameController className="w-6 h-6" />
-          Find your duo
+          {isSubmitting ? 'Publishing...' : 'Find your duo'}
         </button>
       </footer>
     </form>
   );
+}
+
+function getErrorMessage(error: unknown) {
+  if (!isAxiosError(error) || !error.response) {
+    return 'Could not reach the server. Check your connection and try again.';
+  }
+
+  const data = error.response.data as {
+    message?: string;
+    issues?: Record<string, string[] | undefined>;
+  };
+
+  if (data.issues) {
+    const details = Object.entries(data.issues)
+      .map(([field, messages]) => `${field}: ${messages?.join(', ')}`)
+      .join('; ');
+    return `${data.message ?? 'Invalid data'} (${details})`;
+  }
+
+  return data.message ?? 'Could not publish the ad. Try again.';
 }

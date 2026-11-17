@@ -12,6 +12,7 @@ function App() {
   const [games, setGames] = useState<Game[]>([]);
   const [gamesStatus, setGamesStatus] = useState<'loading' | 'error' | 'ready'>('loading');
   const [isCreateAdModalOpen, setIsCreateAdModalOpen] = useState(false);
+  const [isAdPublished, setIsAdPublished] = useState(false);
 
   function loadGames() {
     api
@@ -32,7 +33,15 @@ function App() {
 
   function handleAdCreated() {
     setIsCreateAdModalOpen(false);
+    setIsAdPublished(true);
     loadGames();
+  }
+
+  function handleCreateAdModalOpenChange(open: boolean) {
+    setIsCreateAdModalOpen(open);
+    if (open) {
+      setIsAdPublished(false);
+    }
   }
 
   useEffect(() => {
@@ -84,8 +93,16 @@ function App() {
           })}
         </div>
       )}
-      <Dialog.Root open={isCreateAdModalOpen} onOpenChange={setIsCreateAdModalOpen}>
+      <Dialog.Root open={isCreateAdModalOpen} onOpenChange={handleCreateAdModalOpenChange}>
         <CreateAdBanner />
+        {isAdPublished && (
+          <p
+            role="status"
+            className="mt-4 self-stretch rounded bg-emerald-900/60 px-4 py-3 text-emerald-200"
+          >
+            Your ad has been published!
+          </p>
+        )}
         <CreateAdModal games={games} onAdCreated={handleAdCreated} />
       </Dialog.Root>
     </div>
