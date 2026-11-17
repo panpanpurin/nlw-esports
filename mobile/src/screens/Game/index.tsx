@@ -1,5 +1,5 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { SafeAreaView, TouchableOpacity, View, Image, FlatList, Text } from 'react-native';
+import { SafeAreaView, TouchableOpacity, View, Image, FlatList, Text, Alert } from 'react-native';
 import { RootStackParamList } from '../../@types/navigation';
 import { Background } from '../../components/Background';
 import { styles } from './styles';
@@ -10,14 +10,16 @@ import { Heading } from '../../components/Heading';
 import { DuoCard } from '../../components/DuoCard';
 import type { Ad } from '../../../../shared/api-types';
 import { DuoMatch } from '../../components/DuoMatch';
-import { useEffect, useState } from 'react';
-import { apiGet } from '../../lib/api';
+import { useCallback, useEffect, useState } from 'react';
+import { ApiError, apiGet } from '../../lib/api';
+import { StatusMessage } from '../../components/StatusMessage';
 
 export function Game() {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, 'game'>>();
   const game = route.params;
   const [duos, setDuos] = useState<Ad[]>([]);
+  const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading');
   const [discordDuoSelected, setDiscordDuoSelected] = useState('');
 
   function handleGoBack() {
@@ -30,14 +32,30 @@ export function Game() {
       setDiscordDuoSelected(data.discord);
     } catch (error) {
       console.error(error);
+      const message =
+        error instanceof ApiError && error.status === 429
+          ? 'Too many requests. Wait a few minutes and try again.'
+          : 'Could not get the Discord of this player. Try again.';
+      Alert.alert('Something went wrong', message);
     }
   }
 
-  useEffect(() => {
+  const loadDuos = useCallback(() => {
+    setStatus('loading');
     apiGet<Ad[]>(`/games/${game.id}/ads`)
-      .then((data) => setDuos(data))
-      .catch((error) => console.error(error));
+      .then((data) => {
+        setDuos(data);
+        setStatus('ready');
+      })
+      .catch((error) => {
+        console.error(error);
+        setStatus('error');
+      });
   }, [game.id]);
+
+  useEffect(() => {
+    loadDuos();
+  }, [loadDuos]);
 
   return (
     <Background>
@@ -54,20 +72,26 @@ export function Game() {
 
         <Heading title={game.title} subtitle="Connect and start to play!" />
 
-        <FlatList
-          data={duos}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <DuoCard data={item} onConnect={() => getDiscordUser(item.id)} />
-          )}
-          horizontal
-          style={styles.containerList}
-          contentContainerStyle={[duos.length > 0 ? styles.contentList : styles.emptyListContent]}
-          showsHorizontalScrollIndicator={false}
-          ListEmptyComponent={() => (
-            <Text style={styles.emptyListText}>There are no ads for this game!</Text>
-          )}
-        />
+        {status === 'loading' && <StatusMessage loading />}
+        {status === 'error' && (
+          <StatusMessage message="Could not load the ads." onRetry={loadDuos} />
+        )}
+        {status === 'ready' && (
+          <FlatList
+            data={duos}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <DuoCard data={item} onConnect={() => getDiscordUser(item.id)} />
+            )}
+            horizontal
+            style={styles.containerList}
+            contentContainerStyle={[duos.length > 0 ? styles.contentList : styles.emptyListContent]}
+            showsHorizontalScrollIndicator={false}
+            ListEmptyComponent={() => (
+              <Text style={styles.emptyListText}>There are no ads for this game!</Text>
+            )}
+          />
+        )}
 
         <DuoMatch
           visible={discordDuoSelected.length > 0}
