@@ -2,11 +2,13 @@ import { Router } from 'express';
 import { prisma } from '../lib/prisma';
 import { HttpError } from '../errors/http-error';
 import { asyncHandler } from '../middlewares/async-handler';
+import { discordRateLimit } from '../middlewares/discord-rate-limit';
 
 export const adsRoutes = Router();
 
 adsRoutes.get(
   '/:id/discord',
+  discordRateLimit,
   asyncHandler(async (request, response) => {
     const adId = request.params.id;
 

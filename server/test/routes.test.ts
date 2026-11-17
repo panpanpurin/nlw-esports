@@ -2,6 +2,7 @@ import request from 'supertest';
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { app } from '../src/app';
 import { prisma } from '../src/lib/prisma';
+import { DISCORD_RATE_LIMIT, discordRateLimitStore } from '../src/middlewares/discord-rate-limit';
 
 const GAME_ID = '11111111-1111-4111-8111-111111111111';
 const OTHER_GAME_ID = '22222222-2222-4222-8222-222222222222';
@@ -18,6 +19,7 @@ const validAd = {
 };
 
 beforeEach(async () => {
+  await discordRateLimitStore.resetAll();
   await prisma.ad.deleteMany();
   await prisma.game.deleteMany();
   await prisma.$transaction([
@@ -166,5 +168,19 @@ describe('GET /ads/:id/discord', () => {
     const response = await request(app).get(`/ads/${MISSING_ID}/discord`).expect(404);
 
     expect(response.body).toEqual({ message: 'Ad not found' });
+  });
+
+  it('returns 429 after too many lookups from the same client', async () => {
+    const created = await request(app).post(`/games/${GAME_ID}/ads`).send(validAd).expect(201);
+    const url = `/ads/${created.body.id}/discord`;
+
+    for (let i = 0; i < DISCORD_RATE_LIMIT; i++) {
+      await request(app).get(url).expect(200);
+    }
+
+    const response = await request(app).get(url).expect(429);
+
+    expect(response.body).toEqual({ message: 'Too many requests, try again later' });
+    expect(response.headers).toHaveProperty('ratelimit-policy');
   });
 });
