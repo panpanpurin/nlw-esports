@@ -1,4 +1,4 @@
-import { StatusBar } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import {
   useFonts,
   Inter_400Regular,
@@ -20,7 +20,7 @@ export default function App() {
 
   return (
     <Background>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <StatusBar style="light" />
       {fontsLoader ? <Routes /> : <Loading />}
     </Background>
   );

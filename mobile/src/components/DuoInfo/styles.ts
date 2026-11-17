@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     width: '100%',
-    margimBottom: 16,
+    marginBottom: 16,
   },
   label: {
     color: THEME.COLORS.CAPTION_300,
