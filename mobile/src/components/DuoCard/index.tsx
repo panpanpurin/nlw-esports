@@ -2,7 +2,7 @@ import { TouchableOpacity, View, Text } from 'react-native';
 import { THEME } from '../../theme';
 import { DuoInfo } from '../DuoInfo';
 import { GameController } from 'phosphor-react-native';
-import { Ad } from '../../@types/api';
+import type { Ad } from '../../../../shared/api-types';
 
 import { styles } from './styles';
 

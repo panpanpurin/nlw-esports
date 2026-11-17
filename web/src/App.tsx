@@ -6,7 +6,7 @@ import { CreateAdModal } from './components/CreateAdModal';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState, useEffect } from 'react';
 import { api } from './lib/api';
-import { Game } from './types';
+import type { Game } from '../../shared/api-types';
 
 function App() {
   const [games, setGames] = useState<Game[]>([]);

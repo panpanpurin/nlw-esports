@@ -6,7 +6,7 @@ import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { Input } from './Form/Input';
 import { FormEvent, useState } from 'react';
 import { api } from '../lib/api';
-import { Game } from '../types';
+import type { Game } from '../../../shared/api-types';
 
 const WEEK_DAYS = [
   { value: '0', title: 'Sunday', label: 'S' },

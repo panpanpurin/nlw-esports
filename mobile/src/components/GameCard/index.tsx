@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ImageBackground, TouchableOpacityProps, TouchableOpacity, Text } from 'react-native';
 import { THEME } from '../../theme';
-import { Game } from '../../@types/api';
+import type { Game } from '../../../../shared/api-types';
 
 import { styles } from './styles';
 

@@ -6,7 +6,7 @@ import logoImg from '../../assets/logo-nlw-esports.png';
 import { Heading } from '../../components/Heading';
 import { styles } from './styles';
 import { GameCard } from '../../components/GameCard';
-import { Game } from '../../@types/api';
+import type { Game } from '../../../../shared/api-types';
 import { Background } from '../../components/Background';
 import { useNavigation } from '@react-navigation/native';
 import { apiGet } from '../../lib/api';

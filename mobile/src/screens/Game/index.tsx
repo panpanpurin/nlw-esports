@@ -8,7 +8,7 @@ import { THEME } from '../../theme';
 import logoImg from '../../assets/logo-nlw-esports.png';
 import { Heading } from '../../components/Heading';
 import { DuoCard } from '../../components/DuoCard';
-import { Ad } from '../../@types/api';
+import type { Ad } from '../../../../shared/api-types';
 import { DuoMatch } from '../../components/DuoMatch';
 import { useEffect, useState } from 'react';
 import { apiGet } from '../../lib/api';
