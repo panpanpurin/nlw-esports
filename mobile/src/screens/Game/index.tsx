@@ -41,7 +41,6 @@ export function Game() {
   }
 
   const loadDuos = useCallback(() => {
-    setStatus('loading');
     apiGet<Ad[]>(`/games/${game.id}/ads`)
       .then((data) => {
         setDuos(data);
@@ -56,6 +55,11 @@ export function Game() {
   useEffect(() => {
     loadDuos();
   }, [loadDuos]);
+
+  function handleRetry() {
+    setStatus('loading');
+    loadDuos();
+  }
 
   return (
     <Background>
@@ -74,7 +78,7 @@ export function Game() {
 
         {status === 'loading' && <StatusMessage loading />}
         {status === 'error' && (
-          <StatusMessage message="Could not load the ads." onRetry={loadDuos} />
+          <StatusMessage message="Could not load the ads." onRetry={handleRetry} />
         )}
         {status === 'ready' && (
           <FlatList

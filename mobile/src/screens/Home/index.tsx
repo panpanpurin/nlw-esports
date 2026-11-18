@@ -22,7 +22,6 @@ export function Home() {
   }
 
   const loadGames = useCallback(() => {
-    setStatus('loading');
     apiGet<Game[]>('/games')
       .then((data) => {
         setGames(data);
@@ -38,6 +37,11 @@ export function Home() {
     loadGames();
   }, [loadGames]);
 
+  function handleRetry() {
+    setStatus('loading');
+    loadGames();
+  }
+
   return (
     <Background>
       <SafeAreaView style={styles.container}>
@@ -45,7 +49,7 @@ export function Home() {
         <Heading title="Find your duo!" subtitle="Select the game you want to play..." />
         {status === 'loading' && <StatusMessage loading />}
         {status === 'error' && (
-          <StatusMessage message="Could not load the games." onRetry={loadGames} />
+          <StatusMessage message="Could not load the games." onRetry={handleRetry} />
         )}
         {status === 'ready' && games.length === 0 && (
           <StatusMessage message="No games available yet." />
