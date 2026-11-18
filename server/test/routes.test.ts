@@ -36,6 +36,20 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
+describe('CORS', () => {
+  it('allows the web dev origin by default', async () => {
+    const response = await request(app).get('/games').set('Origin', 'http://localhost:5173');
+
+    expect(response.headers['access-control-allow-origin']).toBe('http://localhost:5173');
+  });
+
+  it('does not allow other origins', async () => {
+    const response = await request(app).get('/games').set('Origin', 'https://evil.example.com');
+
+    expect(response.headers['access-control-allow-origin']).toBeUndefined();
+  });
+});
+
 describe('GET /games', () => {
   it('lists games with their ad count', async () => {
     await request(app).post(`/games/${GAME_ID}/ads`).send(validAd).expect(201);

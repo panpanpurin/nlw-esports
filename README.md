@@ -98,7 +98,7 @@ npm run dev
 
 ```
 
-The server reads its settings from `server/.env` (see `server/.env.example`). When it runs behind a reverse proxy, set `TRUST_PROXY` (for example `1` for one proxy hop) so the Discord lookup rate limit counts each client separately.
+The server reads its settings from `server/.env` (see `server/.env.example`). When it runs behind a reverse proxy, set `TRUST_PROXY` (for example `1` for one proxy hop) so the Discord lookup rate limit counts each client separately. `CORS_ORIGINS` lists the web origins allowed to call the API, comma-separated (default `http://localhost:5173`, `*` allows any origin); set it to the deployed web URL in production.
 
 Run the mobile project:
 
