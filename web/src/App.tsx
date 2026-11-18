@@ -49,10 +49,10 @@ function App() {
   }, []);
 
   return (
-    <div className="max-w-[1344px] mx-auto flex flex-col items-center my-20">
-      <img src={logoImg} alt="" />
+    <div className="max-w-[1344px] mx-auto flex flex-col items-center px-4 my-10 sm:px-8 sm:my-20">
+      <img src={logoImg} alt="" className="w-40 sm:w-auto" />
 
-      <h1 className="my-4 text-5xl text-white font-black">
+      <h1 className="my-4 text-3xl text-center text-white font-black sm:text-5xl">
         Your <span className="text-transparent bg-nlw-gradient bg-clip-text">duo</span> is here.
       </h1>
 
@@ -80,7 +80,7 @@ function App() {
       )}
 
       {gamesStatus === 'ready' && games.length > 0 && (
-        <div className="grid grid-cols-6 gap-6 mt-6">
+        <div className="grid w-full grid-cols-2 gap-4 mt-6 sm:grid-cols-3 sm:gap-6 md:grid-cols-4 lg:grid-cols-6">
           {games.map((game) => {
             return (
               <GameBanner
