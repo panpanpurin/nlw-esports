@@ -150,13 +150,13 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
           />
         </div>
       </div>
-      <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <label id="weekDays-label">When are you used to play?</label>
           <ToggleGroup.Root
             aria-labelledby="weekDays-label"
             type="multiple"
-            className="grid grid-cols-7 gap-2 sm:grid-cols-4"
+            className="flex flex-wrap gap-2"
             value={weekDays}
             onValueChange={setWeekDays}
           >
@@ -172,7 +172,7 @@ function CreateAdForm({ games, onAdCreated }: CreateAdModalProps) {
             ))}
           </ToggleGroup.Root>
         </div>
-        <div className="flex flex-col gap-2 flex-1">
+        <div className="flex flex-col gap-2">
           <label htmlFor="hourStart">Which time of day?</label>
           <div className="grid grid-cols-2 gap-2">
             <Input
