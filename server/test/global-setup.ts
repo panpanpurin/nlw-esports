@@ -14,7 +14,7 @@ export function setup() {
   removeDatabase();
   execSync('npx prisma migrate deploy', {
     cwd: serverRoot,
-    env: { ...process.env, DATABASE_URL: 'file:./test.sqlite' },
+    env: { ...process.env, DATABASE_URL: 'file:./prisma/test.sqlite' },
     stdio: 'ignore',
   });
 }
