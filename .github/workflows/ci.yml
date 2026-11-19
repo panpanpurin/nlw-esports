@@ -67,4 +67,5 @@ jobs:
           cache-dependency-path: mobile/package-lock.json
       - run: npm ci
       - run: npx tsc --noEmit
+      - run: npm test
       - run: npx expo export --platform android --output-dir ${{ runner.temp }}/expo-export
