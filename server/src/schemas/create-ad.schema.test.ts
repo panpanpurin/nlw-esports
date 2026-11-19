@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { z } from 'zod';
 import { createAdSchema } from './create-ad.schema';
 
 const validAd = {
@@ -56,7 +57,7 @@ describe('createAdSchema', () => {
   it('reports equal hours on hourEnd', () => {
     const result = createAdSchema.safeParse({ ...validAd, hourStart: '20:00', hourEnd: '20:00' });
     expect(result.success).toBe(false);
-    expect(result.error?.flatten().fieldErrors.hourEnd).toEqual([
+    expect(result.error && z.flattenError(result.error).fieldErrors.hourEnd).toEqual([
       'End hour must differ from start hour',
     ]);
   });

@@ -1,5 +1,5 @@
 import { ErrorRequestHandler } from 'express';
-import { ZodError } from 'zod';
+import { ZodError, z } from 'zod';
 import { HttpError } from '../errors/http-error';
 
 export const errorHandler: ErrorRequestHandler = (error, _request, response, _next) => {
@@ -10,7 +10,7 @@ export const errorHandler: ErrorRequestHandler = (error, _request, response, _ne
   if (error instanceof ZodError) {
     return response.status(400).json({
       message: 'Invalid request body',
-      issues: error.flatten().fieldErrors,
+      issues: z.flattenError(error).fieldErrors,
     });
   }
 
