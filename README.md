@@ -76,52 +76,52 @@ With GIT installed, in your terminal run the following command:
 git clone https://github.com/Devssaurinho/nlw-esports.git
 ```
 
-To install the dependencies and run the project you will need to have [**Node.js**](https://nodejs.org/en/) installed on your machine, which comes with NPM.
+You will also need [**Node.js**](https://nodejs.org/en/) 22.12 or newer, which comes with NPM.
 
-Navigate to separate subfolders for each project (web/mobile/server) and run the following command:
+### 1. Server (API)
 
 ```bash
+cd server
+cp .env.example .env       # default settings for local development
+npm install                # also generates the Prisma client into src/generated
+npx prisma migrate deploy  # creates the SQLite database
+npx prisma db seed         # adds the games
+npm run dev                # http://localhost:3333
+```
+
+Settings in `server/.env`:
+
+- `DATABASE_URL`: SQLite file, relative to the `server` folder.
+- `PORT`: API port (default `3333`).
+- `CORS_ORIGINS`: web origins allowed to call the API, comma-separated (default `http://localhost:5173`, `*` allows any origin). Set it to the deployed web URL in production.
+- `TRUST_PROXY`: set it when the API runs behind a reverse proxy (for example `1` for one proxy hop), so the rate limits count each client separately.
+- `PRISMA_LOG_QUERIES`: `true` logs every database query.
+
+Each client can publish 10 ads per hour and look up 30 Discord handles per 15 minutes.
+
+To browse the database: `npx prisma studio`.
+
+### 2. Web
+
+With the server running:
+
+```bash
+cd web
 npm install
+npm run dev  # http://localhost:5173
 ```
 
-Run the web project:
+### 3. Mobile
+
+With the server running:
 
 ```bash
-npm run dev
-
-```
-
-Run node server:
-
-```bash
-npm run dev
-
-```
-
-The server reads its settings from `server/.env` (see `server/.env.example`); the SQLite path in `DATABASE_URL` is relative to the `server` folder. `npm install` also generates the Prisma client into `server/src/generated`. When it runs behind a reverse proxy, set `TRUST_PROXY` (for example `1` for one proxy hop) so the Discord lookup rate limit counts each client separately. `CORS_ORIGINS` lists the web origins allowed to call the API, comma-separated (default `http://localhost:5173`, `*` allows any origin); set it to the deployed web URL in production.
-
-Run the mobile project:
-
-```bash
+cd mobile
+npm install
 npm start
-
 ```
 
-In development the app calls the API on port 3333 of the machine running Expo. To use another address, set `API_URL` before starting (for example `API_URL=http://192.168.0.10:3333 npm start`).
-
-Open the project on mobile:
-
-```bash
-expo start
-
-```
-
-Open Prisma visual on web:
-
-```bash
-npx prisma studio
-
-```
+Scan the QR code with [Expo Go](https://expo.dev/go) (Android) or the Camera app (iOS). The phone must be on the same Wi-Fi as the computer, and if you are signed in to Expo on the computer (`npx expo login`), Expo Go must be signed in to the same account. The app calls the API on port 3333 of the machine running Expo; to use another address, set `API_URL` before starting (for example `API_URL=http://192.168.0.10:3333 npm start`).
 
 ## ✅ Quality checks
 
@@ -132,13 +132,15 @@ npm run lint
 npm run format:check
 ```
 
-Server tests, from `server` (they run against a temporary SQLite database that is created and removed automatically):
+Tests, from the repository root:
 
 ```bash
-npm test
+(cd server && npm test)  # API routes against a temporary SQLite database, created and removed automatically
+(cd web && npm test)     # components with Testing Library
+(cd mobile && npm test)  # screens with React Native Testing Library
 ```
 
-The same checks run on GitHub Actions for every push to `main` and every pull request.
+The same checks, plus type checks and builds, run on GitHub Actions for every push to `main` and every pull request.
 
 <h5 align="center">
   &copy;2023 - <a href="https://github.com/devssaurinho/">Pan</a>
