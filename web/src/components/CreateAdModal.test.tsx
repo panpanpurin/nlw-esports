@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AxiosError } from 'axios';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -101,7 +101,7 @@ describe('CreateAdModal', () => {
     post.mockRejectedValue(
       axiosErrorWith(400, {
         message: 'Invalid request body',
-        issues: { discord: ['String must contain at most 37 character(s)'] },
+        issues: { discord: ['Too big: expected string to have <=37 characters'] },
       }),
     );
     const { onAdCreated, user } = renderModal();
@@ -110,9 +110,141 @@ describe('CreateAdModal', () => {
     await user.click(screen.getByRole('button', { name: /find your duo/i }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Invalid request body (discord: String must contain at most 37 character(s))',
+      'Invalid request body (discord: Too big: expected string to have <=37 characters)',
     );
     expect(onAdCreated).not.toHaveBeenCalled();
+  });
+
+  it('joins several field issues', async () => {
+    post.mockRejectedValue(
+      axiosErrorWith(400, {
+        issues: { name: ['Too small'], hourStart: ['Expected HH:mm'] },
+      }),
+    );
+    const { user } = renderModal();
+
+    await fillForm(user);
+    await user.click(screen.getByRole('button', { name: /find your duo/i }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Invalid data (name: Too small; hourStart: Expected HH:mm)',
+    );
+  });
+
+  it('shows the server message when there are no field issues', async () => {
+    post.mockRejectedValue(axiosErrorWith(404, { message: 'Game not found' }));
+    const { user } = renderModal();
+
+    await fillForm(user);
+    await user.click(screen.getByRole('button', { name: /find your duo/i }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Game not found');
+  });
+
+  it('falls back to a generic message for an unexpected server response', async () => {
+    post.mockRejectedValue(axiosErrorWith(500, 'Internal Server Error'));
+    const { user } = renderModal();
+
+    await fillForm(user);
+    await user.click(screen.getByRole('button', { name: /find your duo/i }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Could not publish the ad. Try again.',
+    );
+  });
+
+  it('disables the button while publishing and sends the ad only once', async () => {
+    let resolvePost!: () => void;
+    post.mockReturnValue(new Promise((resolve) => (resolvePost = () => resolve({ data: {} }))));
+    const { onAdCreated, user } = renderModal();
+
+    await fillForm(user);
+    const submit = screen.getByRole('button', { name: /find your duo/i });
+    await user.click(submit);
+
+    expect(submit).toBeDisabled();
+    expect(submit).toHaveTextContent('Publishing...');
+
+    fireEvent.submit(submit.closest('form')!);
+    expect(post).toHaveBeenCalledOnce();
+
+    await act(async () => resolvePost());
+
+    expect(submit).toBeEnabled();
+    expect(submit).toHaveTextContent('Find your duo');
+    expect(onAdCreated).toHaveBeenCalledOnce();
+  });
+
+  it('clears the error when a retry succeeds', async () => {
+    post
+      .mockRejectedValueOnce(new AxiosError('Network Error', 'ERR_NETWORK'))
+      .mockResolvedValueOnce({ data: {} });
+    const { onAdCreated, user } = renderModal();
+
+    await fillForm(user);
+    await user.click(screen.getByRole('button', { name: /find your duo/i }));
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /find your duo/i }));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(onAdCreated).toHaveBeenCalledOnce();
+  });
+
+  it('sends voice chat off by default and drops a day clicked twice', async () => {
+    post.mockResolvedValue({ data: {} });
+    const { user } = renderModal();
+
+    await fillForm(user, { weekDays: ['Sunday', 'Saturday', 'Sunday'] });
+    await user.click(screen.getByRole('button', { name: /find your duo/i }));
+
+    expect(post).toHaveBeenCalledWith(
+      '/games/game-1/ads',
+      expect.objectContaining({ weekDays: [6], useVoiceChannel: false }),
+    );
+  });
+
+  it('accepts a time range that crosses midnight', async () => {
+    post.mockResolvedValue({ data: {} });
+    const { user } = renderModal();
+
+    await fillForm(user, { hourStart: '22:00', hourEnd: '02:00' });
+    await user.click(screen.getByRole('button', { name: /find your duo/i }));
+
+    expect(post).toHaveBeenCalledWith(
+      '/games/game-1/ads',
+      expect.objectContaining({ hourStart: '22:00', hourEnd: '02:00' }),
+    );
+  });
+
+  it('lists the games with a placeholder that cannot be chosen', () => {
+    renderModal();
+
+    const placeholder = screen.getByRole('option', { name: 'Select game you wish to play' });
+    expect(placeholder).toBeDisabled();
+    expect(screen.getByRole<HTMLSelectElement>('combobox', { name: 'Which game?' }).value).toBe('');
+    expect(screen.getByRole('option', { name: 'Game One' })).toHaveValue('game-1');
+  });
+
+  it('uses the same field limits as the server', () => {
+    renderModal();
+
+    expect(screen.getByLabelText('Which game?')).toBeRequired();
+    expect(screen.getByLabelText('Your name (or nickname)')).toHaveAttribute('maxLength', '50');
+    expect(screen.getByLabelText('What is your Discord?')).toHaveAttribute('maxLength', '37');
+    const years = screen.getByLabelText('Since when?');
+    expect(years).toHaveAttribute('min', '0');
+    expect(years).toHaveAttribute('max', '60');
+    expect(years).toHaveAttribute('step', '1');
+    for (const label of [
+      'Your name (or nickname)',
+      'Since when?',
+      'What is your Discord?',
+      'From',
+      'To',
+    ]) {
+      expect(screen.getByLabelText(label)).toBeRequired();
+    }
   });
 
   it('shows a connection message when the server cannot be reached', async () => {
