@@ -1,10 +1,11 @@
 import { Router } from 'express';
+import type { Ad, Game } from '../../../shared/api-types';
 import { prisma } from '../lib/prisma';
 import { HttpError } from '../errors/http-error';
 import { asyncHandler } from '../middlewares/async-handler';
 import { createAdSchema } from '../schemas/create-ad.schema';
 import { convertHourStringToMinutes } from '../utils/convert-hour-string-to-minutes';
-import { convertMinutesToHourString } from '../utils/convert-minutes-to-hour-string';
+import { toAdResponse } from '../utils/to-ad-response';
 
 export const gamesRoutes = Router();
 
@@ -21,7 +22,7 @@ gamesRoutes.get(
       },
     });
 
-    return response.json(games);
+    return response.json(games satisfies Game[]);
   }),
 );
 
@@ -50,7 +51,7 @@ gamesRoutes.post(
       },
     });
 
-    return response.status(201).json(ad);
+    return response.status(201).json(toAdResponse(ad) satisfies Ad);
   }),
 );
 
@@ -83,15 +84,6 @@ gamesRoutes.get(
       },
     });
 
-    return response.json(
-      ads.map((ad) => {
-        return {
-          ...ad,
-          weekDays: ad.weekDays.split(','),
-          hourStart: convertMinutesToHourString(ad.hourStart),
-          hourEnd: convertMinutesToHourString(ad.hourEnd),
-        };
-      }),
-    );
+    return response.json(ads.map(toAdResponse) satisfies Ad[]);
   }),
 );

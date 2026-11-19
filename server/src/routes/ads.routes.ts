@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import type { AdDiscord } from '../../../shared/api-types';
 import { prisma } from '../lib/prisma';
 import { HttpError } from '../errors/http-error';
 import { asyncHandler } from '../middlewares/async-handler';
@@ -25,8 +26,6 @@ adsRoutes.get(
       throw new HttpError(404, 'Ad not found');
     }
 
-    return response.json({
-      discord: ad.discord,
-    });
+    return response.json({ discord: ad.discord } satisfies AdDiscord);
   }),
 );

@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
+import type { CreateAdRequest } from '../../../shared/api-types';
 import { createAdSchema } from './create-ad.schema';
 
 const validAd = {
@@ -13,6 +14,10 @@ const validAd = {
 };
 
 describe('createAdSchema', () => {
+  it('accepts exactly the shared CreateAdRequest shape', () => {
+    expectTypeOf<z.input<typeof createAdSchema>>().toEqualTypeOf<CreateAdRequest>();
+  });
+
   it('accepts a valid ad', () => {
     expect(createAdSchema.parse(validAd)).toEqual(validAd);
   });

@@ -77,21 +77,27 @@ describe('GET /games', () => {
 });
 
 describe('POST /games/:id/ads', () => {
-  it('creates an ad and stores days and hours in their database format', async () => {
+  it('creates an ad, returns it in the API shape and stores days and hours in their database format', async () => {
     const response = await request(app).post(`/games/${GAME_ID}/ads`).send(validAd).expect(201);
 
-    expect(response.body).toMatchObject({
-      gameId: GAME_ID,
+    expect(response.body).toEqual({
+      id: expect.any(String),
       name: 'Player One',
-      discord: 'player#1234',
-      weekDays: '0,5,6',
-      hourStart: 1080,
-      hourEnd: 1350,
+      yearsPlaying: validAd.yearsPlaying,
+      weekDays: ['0', '5', '6'],
+      hourStart: '18:00',
+      hourEnd: '22:30',
       useVoiceChannel: true,
     });
 
     const stored = await prisma.ad.findUnique({ where: { id: response.body.id } });
-    expect(stored?.gameId).toBe(GAME_ID);
+    expect(stored).toMatchObject({
+      gameId: GAME_ID,
+      discord: 'player#1234',
+      weekDays: '0,5,6',
+      hourStart: 1080,
+      hourEnd: 1350,
+    });
   });
 
   it('returns 404 when the game does not exist', async () => {

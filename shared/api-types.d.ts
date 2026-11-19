@@ -26,3 +26,7 @@ export interface CreateAdRequest {
   hourEnd: string;
   useVoiceChannel: boolean;
 }
+
+export interface AdDiscord {
+  discord: string;
+}
