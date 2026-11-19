@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import { gamesRoutes } from './routes/games.routes';
 import { adsRoutes } from './routes/ads.routes';
 import { errorHandler } from './middlewares/error-handler';
@@ -10,6 +11,7 @@ export const app = express();
 
 app.set('trust proxy', parseTrustProxy(process.env.TRUST_PROXY));
 
+app.use(helmet());
 app.use(express.json());
 app.use(cors({ origin: parseCorsOrigins(process.env.CORS_ORIGINS) }));
 

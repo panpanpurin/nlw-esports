@@ -2,7 +2,12 @@ import request from 'supertest';
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { app } from '../src/app';
 import { prisma } from '../src/lib/prisma';
-import { DISCORD_RATE_LIMIT, discordRateLimitStore } from '../src/middlewares/discord-rate-limit';
+import {
+  CREATE_AD_RATE_LIMIT,
+  DISCORD_RATE_LIMIT,
+  createAdRateLimitStore,
+  discordRateLimitStore,
+} from '../src/middlewares/rate-limits';
 
 const GAME_ID = '11111111-1111-4111-8111-111111111111';
 const OTHER_GAME_ID = '22222222-2222-4222-8222-222222222222';
@@ -20,6 +25,7 @@ const validAd = {
 
 beforeEach(async () => {
   await discordRateLimitStore.resetAll();
+  await createAdRateLimitStore.resetAll();
   await prisma.ad.deleteMany();
   await prisma.game.deleteMany();
   await prisma.$transaction([
@@ -47,6 +53,17 @@ describe('CORS', () => {
     const response = await request(app).get('/games').set('Origin', 'https://evil.example.com');
 
     expect(response.headers['access-control-allow-origin']).toBeUndefined();
+  });
+});
+
+describe('security headers', () => {
+  it('sets the helmet headers and hides Express', async () => {
+    const response = await request(app).get('/games').expect(200);
+
+    expect(response.headers['x-content-type-options']).toBe('nosniff');
+    expect(response.headers['x-frame-options']).toBe('SAMEORIGIN');
+    expect(response.headers).toHaveProperty('content-security-policy');
+    expect(response.headers).not.toHaveProperty('x-powered-by');
   });
 });
 
@@ -128,6 +145,29 @@ describe('POST /games/:id/ads', () => {
       .expect(400);
 
     expect(response.body).toEqual({ message: 'Malformed JSON body' });
+  });
+
+  it('returns 429 after too many ads from the same client', async () => {
+    for (let i = 0; i < CREATE_AD_RATE_LIMIT; i++) {
+      await request(app).post(`/games/${GAME_ID}/ads`).send(validAd).expect(201);
+    }
+
+    const response = await request(app).post(`/games/${GAME_ID}/ads`).send(validAd).expect(429);
+
+    expect(response.body).toEqual({ message: 'Too many ads published, try again in an hour' });
+    expect(response.headers).toHaveProperty('ratelimit-policy');
+    expect(await prisma.ad.count()).toBe(CREATE_AD_RATE_LIMIT);
+  });
+
+  it('does not count rejected ads towards the limit', async () => {
+    for (let i = 0; i < CREATE_AD_RATE_LIMIT; i++) {
+      await request(app)
+        .post(`/games/${GAME_ID}/ads`)
+        .send({ ...validAd, weekDays: [] })
+        .expect(400);
+    }
+
+    await request(app).post(`/games/${GAME_ID}/ads`).send(validAd).expect(201);
   });
 });
 

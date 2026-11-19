@@ -3,6 +3,7 @@ import type { Ad, Game } from '../../../shared/api-types';
 import { prisma } from '../lib/prisma';
 import { HttpError } from '../errors/http-error';
 import { asyncHandler } from '../middlewares/async-handler';
+import { createAdRateLimit } from '../middlewares/rate-limits';
 import { createAdSchema } from '../schemas/create-ad.schema';
 import { convertHourStringToMinutes } from '../utils/convert-hour-string-to-minutes';
 import { toAdResponse } from '../utils/to-ad-response';
@@ -28,6 +29,7 @@ gamesRoutes.get(
 
 gamesRoutes.post(
   '/:id/ads',
+  createAdRateLimit,
   asyncHandler(async (request, response) => {
     const gameId = request.params.id;
     const body = createAdSchema.parse(request.body);

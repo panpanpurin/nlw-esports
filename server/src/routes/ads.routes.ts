@@ -3,7 +3,7 @@ import type { AdDiscord } from '../../../shared/api-types';
 import { prisma } from '../lib/prisma';
 import { HttpError } from '../errors/http-error';
 import { asyncHandler } from '../middlewares/async-handler';
-import { discordRateLimit } from '../middlewares/discord-rate-limit';
+import { discordRateLimit } from '../middlewares/rate-limits';
 
 export const adsRoutes = Router();
 
