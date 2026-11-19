@@ -19,9 +19,6 @@
         "backgroundColor": "#121214"
       }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
     "plugins": [
       [
         "expo-splash-screen",
