@@ -1,4 +1,4 @@
-import { ImageBackground } from 'react-native';
+import { Image, View } from 'react-native';
 
 import backgroundImg from '../../assets/background-galaxy.png';
 
@@ -9,8 +9,9 @@ interface Props {
 }
 export function Background({ children }: Props) {
   return (
-    <ImageBackground source={backgroundImg} defaultSource={backgroundImg} style={styles.container}>
+    <View style={styles.container}>
+      <Image source={backgroundImg} defaultSource={backgroundImg} style={styles.image} />
       {children}
-    </ImageBackground>
+    </View>
   );
 }

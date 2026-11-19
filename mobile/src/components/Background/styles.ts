@@ -6,4 +6,11 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: THEME.COLORS.BACKGROUND_800,
   },
+  image: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+  },
 });

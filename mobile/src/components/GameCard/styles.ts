@@ -12,6 +12,13 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
   },
+  image: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+  },
   footer: {
     width: '100%',
     height: 102,

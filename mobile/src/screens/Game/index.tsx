@@ -1,5 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { SafeAreaView, TouchableOpacity, View, Image, FlatList, Text, Alert } from 'react-native';
+import { TouchableOpacity, View, Image, FlatList, Text, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../../@types/navigation';
 import { Background } from '../../components/Background';
 import { styles } from './styles';
