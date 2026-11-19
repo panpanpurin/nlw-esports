@@ -42,7 +42,6 @@ The project is an app that allows users to post an ad to find other players in t
          <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">TypeScript</a>,
          <a href="https://vitejs.dev/" target="_blank" rel="noopener noreferrer">Vite</a>,
          <a href="https://www.radix-ui.com/" target="_blank" rel="noopener noreferrer">RadixUI</a>,
-         <a href="https://formik.org/" target="_blank" rel="noopener noreferrer" >Formik</a>,
          <a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">TailwindCSS</a> and 
          <a href="https://phosphoricons.com/" target="_blank" rel="noopener noreferrer" >Phosphor Icons</a> 
          </td>
@@ -143,5 +142,5 @@ Tests, from the repository root:
 The same checks, plus type checks and builds, run on GitHub Actions for every push to `main` and every pull request.
 
 <h5 align="center">
-  &copy;2023 - <a href="https://github.com/devssaurinho/">Pan</a>
+  &copy;2026 - <a href="https://github.com/devssaurinho/">Pan</a>
 </h5>
