@@ -142,5 +142,5 @@ Tests, from the repository root:
 The same checks, plus type checks and builds, run on GitHub Actions for every push to `main` and every pull request.
 
 <h5 align="center">
-  &copy;2026 - <a href="https://github.com/devssaurinho/">Pan</a>
+  &copy; 2026
 </h5>
